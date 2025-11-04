@@ -18,13 +18,12 @@ My Progress</br>
 TODO </br>
 . Actually move pieces </br>
 
-You can clone these and test 
-the user pythons standard http lib server (Or any http server you have)
+You can clone test this using pythons standard http lib server (Or any http server you have)
 
 ```sh
 git clone https://github.com/leulshawell/under-500-chess
 cd under-500-chess
-python3 -m http.server 8080
+python3 -m http.server 8080 #Or Start any other server you have installed (Configure to server from this dir)
 ```
 
 open you browser and go to
