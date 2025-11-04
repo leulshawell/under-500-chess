@@ -1,4 +1,4 @@
-CHANLANGE YOU
+CHALANGE YOU
 
 Build a Chess Game. Follow These Rules
 
