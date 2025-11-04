@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Pure HTML/JS Chess</title>
+	</head>
+	<body style="background-color: black;">
+		<div id="board">
+		</div>
+	</body>
+
+
+	<script>
+
+		class Piece{
+			row; col; moveStyles; hasMoved; image; placeHolder;
+
+
+			constructor(row, col, moveStyles, renderer, image){
+				this.col = row
+				this.row = col
+				this.renderer = renderer
+				this.moveStyles = moveStyles
+				this.hasMoved = false
+				this.image = image
+				this.placeHolder = false
+			}
+
+			setPosition(row, col){
+				this.col = col
+				this.row = row
+
+				return this
+			}
+
+			move (row, col){
+				this.setPosition(row, col)
+			}
+
+			getPossibleMoves(boardState){
+				return this.moveStyles.map((move)=>{
+					const col = this.col + move.x
+					const row = this.row + move.y
+					return  {
+						col, row
+					}
+				})
+			}
+
+			toPlaceHolder(bool){
+				this.placeHolder = bool
+				return this
+			}
+
+
+
+
+		}
+
+		const SVG = {
+			//BLACK
+			KING_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Chess_fdt45.svg/800px-Chess_fdt45.svg.png",
+			QUEEN_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Chess_gdt45.svg/800px-Chess_gdt45.svg.png",
+			ROOK_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Chess_mdt45.svg/800px-Chess_mdt45.svg.png",
+			
+			KNIGHT_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Chess_Ndt45.svg/800px-Chess_Ndt45.svg.png",
+			POWN_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Chess_hdt45.svg/800px-Chess_hdt45.svg.png",
+			BISHOP_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Chess_Bdt45.svg/800px-Chess_Bdt45.svg.png",
+
+			//WHITE
+			KING_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Chess_klt45.svg/800px-Chess_klt45.svg.png",
+			QUEEN_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/800px-Chess_qlt45.svg.png",
+			ROOK_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Chess_rlt45.svg/800px-Chess_rlt45.svg.png",
+			KNIGHT_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Chess_nlt45.svg/800px-Chess_nlt45.svg.png",
+			POWN_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Chess_plt45.svg/800px-Chess_plt45.svg.png",
+			BISHOP_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Chess_blt45.svg/800px-Chess_blt45.svg.png",
+
+		}
+
+
+		const INITIAL_BOARD_STATE = [
+			// Rank 8 (black back rank)
+			new Piece(7, 0,  [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], function(name){return "r"}, SVG.ROOK_B),
+			new Piece(7, 1,  [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2,xy:1}, {y: 2, x:-1}, {y: -2,xy:-1}], function(name){return "n"}, SVG.KNIGHT_B),
+			new Piece(7, 2,  [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: Infinity, x:Infinity}, {y: -Infinity, x: Infinity}], function(name){return "b"}, SVG.BISHOP_B),
+			new Piece(7, 3,  [{x: Infinity, y:0}, {x: -Infinity, y:0}, {x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity}, {y: Infinity, x:0}, {y: -Infinity, x:0}, {y: Infinity, x:Infinity}, {y: -Infinity, x: Infinity}], function(name){return "q"}, SVG.QUEEN_B),
+			new Piece(7, 4,  [{x: 1, y:0}, {x: -1, y:0}, {x: 1, y:1}, {x: -1, y: 1}, {y: 1, x:0}, {y: -1, x:0}, {y: 1, x:1}, {y: -1, x: 1}], function(name){return "k"}, SVG.KING_B),
+			new Piece(7, 5,  [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: Infinity, x:Infinity}, {y: -Infinity, x: Infinity}], function(name){return "b"}, SVG.BISHOP_B),
+			new Piece(7, 6,  [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2,xy:1}, {y: 2, x:-1}, {y: -2,xy:-1}], function(name){return "n"}, SVG.KNIGHT_B),
+			new Piece(7, 0,  [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], function(name){return "r"}, SVG.ROOK_B),
+
+			// Rank 7 (black pawns)
+			new Piece(6, 0, [{x: 0, y:1}, {x: 0, y:2}], function(name){return "p"}, SVG.POWN_B),
+			new Piece(6, 1, [{x: 0, y:1}, {x: 0, y:2}], function(name){return "p"}, SVG.POWN_B),
+			new Piece(6, 2, [{x: 0, y:1}, {x: 0, y:2}], function(name){return "p"}, SVG.POWN_B),
+			new Piece(6, 3, [{x: 0, y:1}, {x: 0, y:2}], function(name){return "p"}, SVG.POWN_B),
+			new Piece(6, 4, [{x: 0, y:1}, {x: 0, y:2}], function(name){return "p"}, SVG.POWN_B),
+			new Piece(6, 5, [{x: 0, y:1}, {x: 0, y:2}], function(name){return "p"}, SVG.POWN_B),
+			new Piece(6, 6, [{x: 0, y:1}, {x: 0, y:2}], function(name){return "p"}, SVG.POWN_B),
+			new Piece(6, 7, [{x: 0, y:1}, {x: 0, y:2}], function(name){return "p"}, SVG.POWN_B),
+
+			
+			// Ranks 6–3 (empty)
+			undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+
+
+			// Rank 2 (white pawns)
+			new Piece(1, 0, [{x: 0, y:-1}, {x: 0, y:-2}], function(name){return "P"}, SVG.POWN_W),
+			new Piece(1, 1, [{x: 0, y:-1}, {x: 0, y:-2}], function(name){return "P"}, SVG.POWN_W),
+			new Piece(1, 2, [{x: 0, y:-1}, {x: 0, y:-2}], function(name){return "P"}, SVG.POWN_W),
+			new Piece(1, 3, [{x: 0, y:-1}, {x: 0, y:-2}], function(name){return "P"}, SVG.POWN_W),
+			new Piece(1, 4, [{x: 0, y:-1}, {x: 0, y:-2}], function(name){return "P"}, SVG.POWN_W),
+			new Piece(1, 5, [{x: 0, y:-1}, {x: 0, y:-2}], function(name){return "P"}, SVG.POWN_W),
+			new Piece(1, 6, [{x: 0, y:-1}, {x: 0, y:-2}], function(name){return "P"}, SVG.POWN_W),
+			new Piece(1, 7, [{x: 0, y:-1}, {x: 0, y:-2}], function(name){return "P"}, SVG.POWN_W),
+
+			// Rank 1 (white back rank)
+			new Piece(0, 0,  [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], function(name){return "R"}, SVG.ROOK_W),
+			new Piece(0, 1,  [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {y: 2, x:1}, {y: -2,x:1}, {y: 2, x:-1}, {y: -2,x:-1}], function(name){return "N"}, SVG.KNIGHT_W),
+			new Piece(0, 2,  [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: Infinity, x:Infinity}, {y: -Infinity, x: Infinity}], function(name){return "B"}, SVG.BISHOP_W),
+			new Piece(0, 3,  [{x: Infinity, y:0}, {x: -Infinity, y:0}, {x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity}, {y: Infinity, x:0}, {y: -Infinity, x:0}, {y: Infinity, x:Infinity}, {y: -Infinity, x: Infinity}], function(name){return "Q"}, SVG.QUEEN_W),
+			new Piece(0, 4,  [{x: 1, y:0}, {x: -1, y:0}, {x: 1, y:1}, {x: -1, y: 1}, {y: 1, x:0}, {y: -1, x:0}, {y: 1, x:1}, {y: -1, x: 1}], function(name){return "K"}, SVG.KING_W),
+			new Piece(0, 5,  [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: Infinity, x:Infinity}, {y: -Infinity, x: Infinity}], function(name){return "B"}, SVG.BISHOP_W),
+			new Piece(0, 6,  [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2, x:1}, {y: 2, x:-1}, {y: -2, x:-1}], function(name){return "N"}, SVG.KNIGHT_W),
+			new Piece(0, 0,  [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], function(name){return "R"}, SVG.ROOK_W),
+
+		];
+		
+		
+
+		const CELLS = 64;
+		const CELLSIZE= 60 //in pixels
+		
+		function clearPlaceHolder(board){
+			for(let i=0; i < CELLS; i++)
+				if (board[i]  && board[i].placeHolder )
+					board[i] = undefined
+			
+		}
+		
+		function renderBoard(state){
+			let row = 0;
+			let col = 0;
+
+			const board = document.getElementById("board")
+			board.style.width = 8*CELLSIZE
+			board.style.height = 8*CELLSIZE
+			board.style.borderColor = "white"
+			board.style.borderWidth = "4px"
+			
+
+			for(let i=0; i < CELLS; i++){
+				col = i % 8
+				row =  Math.floor(i / 8)
+				const div = document.createElement("div")
+				div.style.width = `${CELLSIZE}px`
+				div.style.height = `${CELLSIZE}px`
+				div.style.position = "absolute"
+				div.style.left = `${CELLSIZE * col}px`
+				div.style.top = `${CELLSIZE * row}px`
+				div.style.backgroundColor = (i+row)%2? "#666666": "#133666"
+				div.style.borderColor = "black"
+				div.style.borderWidth = 2
+
+
+				//piece
+				const piece = state[i]
+				if(piece){
+					piece.move(row, col)
+					div.style.display = "flex"
+					div.style.justifyContent="center"
+					div.style.alignItems="center"
+					
+					if(!piece.placeHolder){
+						const pieceRender = document.createElement("img")
+						pieceRender.src = piece.image
+						pieceRender.alt = piece.renderer()
+						pieceRender.width = CELLSIZE
+						pieceRender.height = CELLSIZE
+
+						div.onclick = (e)=>{
+							clearPlaceHolder(INITIAL_BOARD_STATE)
+							const moves = piece.getPossibleMoves(INITIAL_BOARD_STATE)
+							for(const move of moves){
+								if(move.col < 8 && move.row < 8){
+									const index = move.row * 8 + move.col 
+									INITIAL_BOARD_STATE[index] = INITIAL_BOARD_STATE[index]? INITIAL_BOARD_STATE[index]: (new  Piece(Infinity, Infinity, move.col, [], ()=>{return "X"})).toPlaceHolder(true)
+								}
+							}
+
+							renderBoard(INITIAL_BOARD_STATE)
+						}
+						pieceRender.style.color = "white"
+						pieceRender.textContent = piece.renderer()
+						div.appendChild(pieceRender)
+					}else {
+						const pieceRender = document.createElement("h1")
+						pieceRender.textContent = "X"
+						div.appendChild(pieceRender)
+					}
+					
+					
+				}
+
+
+				board.appendChild(div)
+			}
+		}
+
+		renderBoard(INITIAL_BOARD_STATE)
+		
+
+	</script>
+</html>
+		
