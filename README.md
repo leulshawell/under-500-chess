@@ -1,4 +1,4 @@
-CHALANGE YOU
+CHALLENGE YOU
 
 Build a Chess Game. Follow These Rules
 
