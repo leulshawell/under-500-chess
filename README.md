@@ -11,12 +11,12 @@ Build a Chess Game. Follow These Rules
 Multiplayer Support if possible. I would be AMAZED.
 
 
-My Progress
-. All Pieces added
-. Pieces can be clicked to see possible moves
+My Progress</br>
+. All Pieces added</br>
+. Pieces can be clicked to see possible moves</br>
 
-Remainin
-. Actually move pieces 
+TODO </br>
+. Actually move pieces </br>
 
 You can clone these and test 
 the user pythons standard http lib server (Or any http server you have)
