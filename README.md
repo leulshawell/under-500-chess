@@ -11,3 +11,16 @@ Build a Chess Game. Follow These Rules
 Multiplayer Support if possible. I would be AMAZED.
 
 
+You can clone these and test 
+the user pythons standard http lib server (Or any http server you have)
+
+```sh
+git clone https://github.com/leulshawell/under-500-chess
+cd under-500-chess
+python3 -m http.server 8080
+```
+
+open you browser and go to
+http://localhost:8080
+
+
