@@ -12,13 +12,58 @@
 
 	<script>
 
+
+		const SVG = {
+			//BLACK
+			KING_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Chess_fdt45.svg/800px-Chess_fdt45.svg.png",
+			QUEEN_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Chess_gdt45.svg/800px-Chess_gdt45.svg.png",
+			ROOK_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Chess_mdt45.svg/800px-Chess_mdt45.svg.png",
+			
+			KNIGHT_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Chess_Ndt45.svg/800px-Chess_Ndt45.svg.png",
+			POWN_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Chess_hdt45.svg/800px-Chess_hdt45.svg.png",
+			BISHOP_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Chess_Bdt45.svg/800px-Chess_Bdt45.svg.png",
+
+			//WHITE
+			KING_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Chess_klt45.svg/800px-Chess_klt45.svg.png",
+			QUEEN_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/800px-Chess_qlt45.svg.png",
+			ROOK_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Chess_rlt45.svg/800px-Chess_rlt45.svg.png",
+			KNIGHT_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Chess_nlt45.svg/800px-Chess_nlt45.svg.png",
+			POWN_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Chess_plt45.svg/800px-Chess_plt45.svg.png",
+			BISHOP_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Chess_blt45.svg/800px-Chess_blt45.svg.png",
+
+		}
+
+		const COLORS  = {BLACK: 1, WHITE: -1}
+
+		const CELLS = 64;
+		const CELLSIZE= 60 //in pixels
+		
+		function clearPlaceHolder(board){
+			for(let i=0; i < CELLS; i++){
+				if (board[i]  && board[i].placeHolder )
+				board[i] = board[i].for_
+
+			}
+			
+		}
+
+		const PIECES = {
+			PAWN: 0,
+			KING: 1,
+			QUEEN: 2,
+			ROOK: 3,
+			BISHOP: 4,
+			KIGHT: 5,
+		}
+
 		class Piece{
 			row; col; moveStyles; hasMoved; image; placeHolder; color; for_; game;
 
 
-			constructor(row, col, moveStyles, color, image){
+			constructor(row, col, piece, moveStyles, color, image){
 				this.col = col
 				this.row = row
+				this.piece = piece
 				this.moveStyles = moveStyles
 				this.hasMoved = false
 				this.image = image
@@ -44,6 +89,18 @@
 
 
 			getPossibleMoves(boardState){
+				if (this.piece === PIECES.PAWN){
+					const moves = []
+					if (this.col > 0 && this.game.board[this.col-1 + (this.row + this.color)*8])
+						moves.push({col: this.col-1, row: this.row + this.color})
+					if (!this.game.board[this.col + (this.row + this.color)*8])
+						moves.push({col: this.col, row: this.row + this.color})
+					if (this.col  < 8 && this.game.board[this.col+1 + (this.row + this.color)*8])
+						moves.push({col: this.col+1, row: this.row + this.color})
+					
+					return moves
+				}
+
 				return this.moveStyles.map((move)=>{
 					if (move.x === Infinity){
 						const moremoves  = []
@@ -139,8 +196,8 @@
 						if (!(game.turn === this.color))
 							return 
 						game.activePiece = this
+						// cell.style.backgroundColor = "#55bb55"
 						clearPlaceHolder(game.board)
-						this.game.activePiece = this
 						const moves = this.getPossibleMoves(this.board)
 						const filteredMoves = []
 
@@ -165,74 +222,37 @@
 								game.board[index] = game.board[index] && this.color===game.board[index].color? game.board[index]: plh
 							}
 						}
+						cell.replaceChildren([image])
 						game.renderBoard()
 					}
-					cell.appendChild(image)
+						cell.appendChild(image)
 
 				}
 			}
 
 		}
 
-		const SVG = {
-			//BLACK
-			KING_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Chess_fdt45.svg/800px-Chess_fdt45.svg.png",
-			QUEEN_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Chess_gdt45.svg/800px-Chess_gdt45.svg.png",
-			ROOK_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Chess_mdt45.svg/800px-Chess_mdt45.svg.png",
-			
-			KNIGHT_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Chess_Ndt45.svg/800px-Chess_Ndt45.svg.png",
-			POWN_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Chess_hdt45.svg/800px-Chess_hdt45.svg.png",
-			BISHOP_B: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Chess_Bdt45.svg/800px-Chess_Bdt45.svg.png",
-
-			//WHITE
-			KING_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Chess_klt45.svg/800px-Chess_klt45.svg.png",
-			QUEEN_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Chess_qlt45.svg/800px-Chess_qlt45.svg.png",
-			ROOK_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Chess_rlt45.svg/800px-Chess_rlt45.svg.png",
-			KNIGHT_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Chess_nlt45.svg/800px-Chess_nlt45.svg.png",
-			POWN_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Chess_plt45.svg/800px-Chess_plt45.svg.png",
-			BISHOP_W: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Chess_blt45.svg/800px-Chess_blt45.svg.png",
-
-		}
-		const COLORS  = {BLACK: 1, WHITE: -1}
-
-		
-		
-		
-
-		const CELLS = 64;
-		const CELLSIZE= 60 //in pixels
-		
-		function clearPlaceHolder(board){
-			for(let i=0; i < CELLS; i++){
-				if (board[i]  && board[i].placeHolder )
-				board[i] = board[i].for_
-
-			}
-			
-		}
-
-		
 		//tis is the initial board state for a classical chess game
 		const INITIAL_BOARD_STATE = [
 				// Rank 8 (black back rank)
-				new Piece(0, 0, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.BLACK, SVG.ROOK_B),
-				new Piece(0, 1, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2,x:1}, {y: 2, x:-1}, {y: -2,x:-1}], COLORS.BLACK, SVG.KNIGHT_B),
-				new Piece(0, 2, [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.BLACK, SVG.BISHOP_B),
-				new Piece(0, 3, [{x: Infinity, y:0}, {x: -Infinity, y:0}, {x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity}, {y: Infinity, x:0}, {y: -Infinity, x:0}, {y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.BLACK, SVG.QUEEN_B),
-				new Piece(0, 4, [{x: 1, y:0}, {x: -1, y:0}, {x: 1, y:1}, {x: -1, y: 1}, {y: 1, x:0}, {y: -1, x:0}, {y: -1, x:-1}, {y: -1, x: 1}], COLORS.BLACK, SVG.KING_B),
-				new Piece(0, 5, [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.BLACK, SVG.BISHOP_B),
-				new Piece(0, 6, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2,x:1}, {y: 2, x:-1}, {y: -2,x:-1}], COLORS.BLACK, SVG.KNIGHT_B),
-				new Piece(0, 7, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.BLACK, SVG.ROOK_B),
+				new Piece(0, 0, PIECES.ROOK, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.BLACK, SVG.ROOK_B),
+				new Piece(0, 1, PIECES.KIGHT, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2,x:1}, {y: 2, x:-1}, {y: -2,x:-1}], COLORS.BLACK, SVG.KNIGHT_B),
+				new Piece(0, 2, PIECES.BISHOP, [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.BLACK, SVG.BISHOP_B),
+				new Piece(0, 3, PIECES.QUEEN, [{x: Infinity, y:0}, {x: -Infinity, y:0}, {x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity}, {y: Infinity, x:0}, {y: -Infinity, x:0}, {y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.BLACK, SVG.QUEEN_B),
+				new Piece(0, 4, PIECES.KING, [{x: 1, y:0}, {x: -1, y:0}, {x: 1, y:1}, {x: -1, y: 1}, {y: 1, x:0}, {y: -1, x:0}, {y: -1, x:-1}, {y: -1, x: 1}], COLORS.BLACK, SVG.KING_B),
+				new Piece(0, 5, PIECES.BISHOP, [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.BLACK, SVG.BISHOP_B),
+				new Piece(0, 6, PIECES.KIGHT, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2,x:1}, {y: 2, x:-1}, {y: -2,x:-1}], COLORS.BLACK, SVG.KNIGHT_B),
+				new Piece(0, 7, PIECES.ROOK, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.BLACK, SVG.ROOK_B),
 
 				// Rank 7 (black pawns)
-				new Piece(1, 0, [{x: 0, y:1}, {x: 0, y: 2}], COLORS.BLACK, SVG.POWN_B),
-				new Piece(1, 1, [{x: 0, y:1}, {x: 0, y: 2}], COLORS.BLACK, SVG.POWN_B),
-				new Piece(1, 2, [{x: 0, y:1}, {x: 0, y: 2}], COLORS.BLACK, SVG.POWN_B),
-				new Piece(1, 3, [{x: 0, y:1}, {x: 0, y: 2}], COLORS.BLACK, SVG.POWN_B),
-				new Piece(1, 4, [{x: 0, y:1}, {x: 0, y: 2}], COLORS.BLACK, SVG.POWN_B),
-				new Piece(1, 5, [{x: 0, y:1}, {x: 0, y: 2}], COLORS.BLACK, SVG.POWN_B),
-				new Piece(1, 6, [{x: 0, y:1}, {x: 0, y: 2}], COLORS.BLACK, SVG.POWN_B),
-				new Piece(1, 7, [{x: 0, y:1}, {x: 0, y: 2}], COLORS.BLACK, SVG.POWN_B),
+				new Piece(1, 0, PIECES.PAWN, [], COLORS.BLACK, SVG.POWN_B),
+				new Piece(1, 1, PIECES.PAWN, [], COLORS.BLACK, SVG.POWN_B),
+				new Piece(1, 2, PIECES.PAWN, [], COLORS.BLACK, SVG.POWN_B),
+				new Piece(1, 3, PIECES.PAWN, [], COLORS.BLACK, SVG.POWN_B),
+				new Piece(1, 4, PIECES.PAWN, [], COLORS.BLACK, SVG.POWN_B),
+				new Piece(1, 5, PIECES.PAWN, [], COLORS.BLACK, SVG.POWN_B),
+				new Piece(1, 6, PIECES.PAWN, [], COLORS.BLACK, SVG.POWN_B),
+				new Piece(1, 7, PIECES.PAWN, [], COLORS.BLACK, SVG.POWN_B),
 
 				
 				// Ranks 6–3 (empty)
@@ -240,25 +260,26 @@
 
 
 				// Rank 2 (white pawns)
-				new Piece(6, 0, [{x: 0, y:-1}, {x: 0, y:-2}], COLORS.WHITE, SVG.POWN_W),
-				new Piece(6, 1, [{x: 0, y:-1}, {x: 0, y:-2}], COLORS.WHITE, SVG.POWN_W),
-				new Piece(6, 2, [{x: 0, y:-1}, {x: 0, y:-2}], COLORS.WHITE, SVG.POWN_W),
-				new Piece(6, 3, [{x: 0, y:-1}, {x: 0, y:-2}], COLORS.WHITE, SVG.POWN_W),
-				new Piece(6, 4, [{x: 0, y:-1}, {x: 0, y:-2}], COLORS.WHITE, SVG.POWN_W),
-				new Piece(6, 5, [{x: 0, y:-1}, {x: 0, y:-2}], COLORS.WHITE, SVG.POWN_W),
-				new Piece(6, 6, [{x: 0, y:-1}, {x: 0, y:-2}], COLORS.WHITE, SVG.POWN_W),
-				new Piece(6, 7, [{x: 0, y:-1}, {x: 0, y:-2}], COLORS.WHITE, SVG.POWN_W),
+				new Piece(6, 0, PIECES.PAWN, [], COLORS.WHITE, SVG.POWN_W),
+				new Piece(6, 1, PIECES.PAWN, [], COLORS.WHITE, SVG.POWN_W),
+				new Piece(6, 2, PIECES.PAWN, [], COLORS.WHITE, SVG.POWN_W),
+				new Piece(6, 3, PIECES.PAWN, [], COLORS.WHITE, SVG.POWN_W),
+				new Piece(6, 4, PIECES.PAWN, [], COLORS.WHITE, SVG.POWN_W),
+				new Piece(6, 5, PIECES.PAWN, [], COLORS.WHITE, SVG.POWN_W),
+				new Piece(6, 6, PIECES.PAWN, [], COLORS.WHITE, SVG.POWN_W),
+				new Piece(6, 7, PIECES.PAWN, [], COLORS.WHITE, SVG.POWN_W),
 
 				// Rank 1 (white back rank)
-				new Piece(7, 0, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.WHITE, SVG.ROOK_W),
-				new Piece(7, 1, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1} , {y: 2, x:1}, {y: -2,x:1}, {y: 2, x:-1}, {y: -2,x:-1}], COLORS.WHITE, SVG.KNIGHT_W),
-				new Piece(7, 2, [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: -Infinity, x:-Infinity}, {y: -Infinity, x: Infinity}], COLORS.WHITE, SVG.BISHOP_W),
-				new Piece(7, 3, [{x: Infinity, y:0}, {x: -Infinity, y:0}, {x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity}, {y: Infinity, x:0}, {y: -Infinity, x:0}, {y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.WHITE, SVG.QUEEN_W),
-				new Piece(7, 4, [{x: 1, y:0}, {x: -1, y:0}, {x: 1, y:1}, {x: -1, y: 1}, {y: 1, x:0}, {y: -1, x:0}, {y: -1, x:-1}, {y: -1, x: 1}], COLORS.WHITE, SVG.KING_W),
-				new Piece(7, 5, [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.WHITE, SVG.BISHOP_W),
-				new Piece(7, 6, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2, x:1}, {y: 2, x:-1}, {y: -2, x:-1}], COLORS.WHITE, SVG.KNIGHT_W),
-				new Piece(7, 7, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.WHITE, SVG.ROOK_W),
+				new Piece(7, 0, PIECES.ROOK, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.WHITE, SVG.ROOK_W),
+				new Piece(7, 1, PIECES.KIGHT, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1} , {y: 2, x:1}, {y: -2,x:1}, {y: 2, x:-1}, {y: -2,x:-1}], COLORS.WHITE, SVG.KNIGHT_W),
+				new Piece(7, 2, PIECES.BISHOP, [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: -Infinity, x:-Infinity}, {y: -Infinity, x: Infinity}], COLORS.WHITE, SVG.BISHOP_W),
+				new Piece(7, 3, PIECES.QUEEN, [{x: Infinity, y:0}, {x: -Infinity, y:0}, {x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity}, {y: Infinity, x:0}, {y: -Infinity, x:0}, {y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.WHITE, SVG.QUEEN_W),
+				new Piece(7, 4, PIECES.KING, [{x: 1, y:0}, {x: -1, y:0}, {x: 1, y:1}, {x: -1, y: 1}, {y: 1, x:0}, {y: -1, x:0}, {y: -1, x:-1}, {y: -1, x: 1}], COLORS.WHITE, SVG.KING_W),
+				new Piece(7, 5, PIECES.BISHOP, [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.WHITE, SVG.BISHOP_W),
+				new Piece(7, 6, PIECES.KIGHT, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2, x:1}, {y: 2, x:-1}, {y: -2, x:-1}], COLORS.WHITE, SVG.KNIGHT_W),
+				new Piece(7, 7, PIECES.ROOK, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.WHITE, SVG.ROOK_W),
 			];
+
 
 		class Game{
 			board; activePiece; turn; score
@@ -266,6 +287,7 @@
 
 			constructor(initialBoard){
 				this.board = initialBoard
+				this.cells = [];
 				for(let i=0; i<CELLS; i++)
 					if(initialBoard[i])
 						initialBoard[i].toGame(this)
@@ -274,20 +296,19 @@
 				
 			}
 
+			
 			renderBoard(){
-				let row = 0;
-				let col = 0;
-
 				const boardElement = document.getElementById("board")
 				boardElement.style.width = 8*CELLSIZE
 				boardElement.style.height = 8*CELLSIZE
-				boardElement.style.borderColor = "white"
-				boardElement.style.borderWidth = "4px"
-				
 
+				let col = 0
+				let row = 0;
+				
 				for(let i=0; i < CELLS; i++){
 					col = i % 8
 					row =  Math.floor(i / 8)
+
 					const cell = document.createElement("div")
 					cell.style.width = `${CELLSIZE}px`
 					cell.style.height = `${CELLSIZE}px`
@@ -301,16 +322,14 @@
 					cell.style.justifyContent="center"
 					cell.style.alignItems="center"
 
-					//piece
-					const piece = this.board[i]
-					if(piece)
-						piece.render(cell)
-					
-					board.appendChild(cell)
+					if(this.board[i])
+						this.board[i].render(cell)
+					boardElement.appendChild(cell)
+
 				}
-				//render player stats
-				
+					
 			}	
+
 			rednerScoreBoard(){
 				const boardElement = document.getElementById("board")
 				const scoreBoard = document.createElement("div")
@@ -320,7 +339,7 @@
 				scoreBoard.style.left = `0px`
 				scoreBoard.style.width = `${8 * CELLSIZE}px`
 				scoreBoard.style.height = `${CELLSIZE}px`
-				scoreBoard.style.
+				// scoreBoard.style.
 				boardElement.appendChild(scoreBoard)
 
 

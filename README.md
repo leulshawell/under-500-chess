@@ -19,8 +19,8 @@ My Progress</br>
 
 
 TODO </br>
-- Handle Pawns diagonal takes
 - Handle Checks and piece pins
+- Handle king moving to protected cells 
 - Optimize move calculations
 - Score Board
 
