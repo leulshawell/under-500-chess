@@ -14,9 +14,16 @@ Multiplayer Support if possible. I would be AMAZED.
 My Progress</br>
 . All Pieces added</br>
 . Pieces can be clicked to see possible moves</br>
+- All Pieces Can move to legal position</br>
+- Pieces can take pieces</br>
+
 
 TODO </br>
-. Actually move pieces </br>
+- Handle Pawns diagonal takes
+- Handle Checks and piece pins
+- Optimize move calculations
+- Score Board
+
 
 You can clone test this using pythons standard http lib server (Or any http server you have)
 
