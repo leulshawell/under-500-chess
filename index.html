@@ -100,7 +100,7 @@
 
 			toPlaceHolder(for_){
 				this.placeHolder = true
-				this.for_ = for_ === this? undefined: for_
+				this.for_ = for_
 				return this
 			}
 
@@ -123,6 +123,7 @@
 						game.board[game.activePiece.row * 8 + game.activePiece.col] = undefined
 						game.activePiece.move(this.row, this.col)
 						this.for_  = undefined
+						game.turn *= -1
 						clearPlaceHolder(game.board)
 						game.renderBoard()
 					}
@@ -135,11 +136,14 @@
 
 					cell.onclick = (e)=>{
 						const game = this.game
+						if (!(game.turn === this.color))
+							return 
 						game.activePiece = this
 						clearPlaceHolder(game.board)
 						this.game.activePiece = this
 						const moves = this.getPossibleMoves(this.board)
 						const filteredMoves = []
+
 						for(const move of moves)
 							if (move.length){
 								for (const movee of move){
@@ -157,7 +161,8 @@
 						for (const move of filteredMoves){
 							if((move.col < 8 && move.row < 8) && (move.col > -1 && move.row > -1)){
 								const index = move.row * 8 + move.col 
-								game.board[index] = game.board[index] && this.color===game.board[index].color? game.board[index]: (new  Piece(move.row, move.col, undefined, undefined)).toPlaceHolder(game.board[index]).toGame(game)
+								const plh = (new  Piece(move.row, move.col, undefined, undefined)).toPlaceHolder(game.board[index]).toGame(game)
+								game.board[index] = game.board[index] && this.color===game.board[index].color? game.board[index]: plh
 							}
 						}
 						game.renderBoard()
@@ -217,7 +222,7 @@
 				new Piece(0, 4, [{x: 1, y:0}, {x: -1, y:0}, {x: 1, y:1}, {x: -1, y: 1}, {y: 1, x:0}, {y: -1, x:0}, {y: -1, x:-1}, {y: -1, x: 1}], COLORS.BLACK, SVG.KING_B),
 				new Piece(0, 5, [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.BLACK, SVG.BISHOP_B),
 				new Piece(0, 6, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2,x:1}, {y: 2, x:-1}, {y: -2,x:-1}], COLORS.BLACK, SVG.KNIGHT_B),
-				new Piece(0, 0, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.BLACK, SVG.ROOK_B),
+				new Piece(0, 7, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.BLACK, SVG.ROOK_B),
 
 				// Rank 7 (black pawns)
 				new Piece(1, 0, [{x: 0, y:1}, {x: 0, y: 2}], COLORS.BLACK, SVG.POWN_B),
@@ -251,18 +256,21 @@
 				new Piece(7, 3, [{x: Infinity, y:0}, {x: -Infinity, y:0}, {x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity}, {y: Infinity, x:0}, {y: -Infinity, x:0}, {y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.WHITE, SVG.QUEEN_W),
 				new Piece(7, 4, [{x: 1, y:0}, {x: -1, y:0}, {x: 1, y:1}, {x: -1, y: 1}, {y: 1, x:0}, {y: -1, x:0}, {y: -1, x:-1}, {y: -1, x: 1}], COLORS.WHITE, SVG.KING_W),
 				new Piece(7, 5, [{x: Infinity, y:Infinity}, {x: -Infinity, y: Infinity},{y: -Infinity, x: -Infinity}, {y: -Infinity, x: Infinity}], COLORS.WHITE, SVG.BISHOP_W),
-				new Piece(7, 6, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1} , {x: -2, y:-1}, {y: 2, x:1}, {y: -2, x:1}, {y: 2, x:-1}, {y: -2, x:-1}], COLORS.WHITE, SVG.KNIGHT_W),
-				new Piece(7, 0, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.WHITE, SVG.ROOK_W),
+				new Piece(7, 6, [{x: 2, y:1}, {x: -2, y:1}, {x: 2, y:-1}, {x: -2, y:-1}, {y: 2, x:1}, {y: -2, x:1}, {y: 2, x:-1}, {y: -2, x:-1}], COLORS.WHITE, SVG.KNIGHT_W),
+				new Piece(7, 7, [{x: Infinity, y:0}, {x: -Infinity, y:0},  {y: Infinity, x:0}, {y: -Infinity, x:0}], COLORS.WHITE, SVG.ROOK_W),
 			];
 
 		class Game{
-			board; activePiece; turn
+			board; activePiece; turn; score
+			
+
 			constructor(initialBoard){
 				this.board = initialBoard
 				for(let i=0; i<CELLS; i++)
 					if(initialBoard[i])
 						initialBoard[i].toGame(this)
 				this.turn = COLORS.WHITE
+				this.score = 0
 				
 			}
 
@@ -300,11 +308,27 @@
 					
 					board.appendChild(cell)
 				}
-				console.log(game.board)
+				//render player stats
+				
 			}	
+			rednerScoreBoard(){
+				const boardElement = document.getElementById("board")
+				const scoreBoard = document.createElement("div")
+				scoreBoard.style.position = "fixed"
+				scoreBoard.style.backgroundColor = "white"
+				scoreBoard.style.top = `${8 * CELLSIZE + 15}px`
+				scoreBoard.style.left = `0px`
+				scoreBoard.style.width = `${8 * CELLSIZE}px`
+				scoreBoard.style.height = `${CELLSIZE}px`
+				scoreBoard.style.
+				boardElement.appendChild(scoreBoard)
+
+
+			}
 
 			start(){
 				this.renderBoard()
+				this.rednerScoreBoard()
 			}
 		}
 
