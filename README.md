@@ -25,7 +25,7 @@ TODO </br>
 - Score Board
 
 
-You can clone test this using pythons standard http lib server (Or any http server you have)
+You can clone and test this using pythons standard http lib server (Or any http server you have)
 
 ```sh
 git clone https://github.com/leulshawell/under-500-chess
@@ -33,7 +33,7 @@ cd under-500-chess
 python3 -m http.server 8080 #Or Start any other server you have installed (Configure to server from this dir)
 ```
 
-open you browser and go to
+then open your browser and go to
 http://localhost:8080
 
 

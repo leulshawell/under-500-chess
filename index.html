@@ -81,8 +81,6 @@
 
 			move (row, col){
 				this.setPosition(row, col)
-				// if(!this.hasMoved && ['p', "P"].includes(this.renderer()))
-				// 	this.moveStyles = [this.moveStyles[0]]
 				this.hasMoved = true
 			}
 
@@ -91,10 +89,13 @@
 			getPossibleMoves(boardState){
 				if (this.piece === PIECES.PAWN){
 					const moves = []
-					if (this.col > 0 && this.game.board[this.col-1 + (this.row + this.color)*8])
-						moves.push({col: this.col-1, row: this.row + this.color})
 					if (!this.game.board[this.col + (this.row + this.color)*8])
 						moves.push({col: this.col, row: this.row + this.color})
+					if (!this.hasMoved && !this.game.board[this.col + (this.row + 2 * this.color)*8])
+						moves.push({col: this.col, row: this.row + 2* this.color})
+					if (this.col > 0 && this.game.board[this.col-1 + (this.row + this.color)*8])
+						moves.push({col: this.col-1, row: this.row + this.color})
+					
 					if (this.col  < 8 && this.game.board[this.col+1 + (this.row + this.color)*8])
 						moves.push({col: this.col+1, row: this.row + this.color})
 					
